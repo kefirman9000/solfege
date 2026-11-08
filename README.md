@@ -49,6 +49,9 @@ The **Folders** menu chooses how sorted music is arranged:
 | Year › Artist › Album | `1977/Queen/News of the World/` |
 | Decade › Genre › Artist › Album | `1970s/Rock/Queen/News of the World/` |
 | Genre › Sub-genre (tracks loose inside) | `Rock/Classic Rock/` |
+| Artist › Year - Album | `Queen/1977 - News of the World/` (albums list in release order) |
+| A–Z › Artist › Album | `Q/Queen/News of the World/` ("The Beatles" files under B, "2Pac" under #) |
+| Artist (no album folders) | `Queen/` |
 
 ### File names
 

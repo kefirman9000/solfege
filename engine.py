@@ -448,6 +448,9 @@ LAYOUTS = {
     "year": "Year › Artist › Album",
     "decade_genre": "Decade › Genre › Artist › Album",
     "genre_only": "Genre › Sub-genre (tracks loose inside)",
+    "artist_year": "Artist › Year - Album (albums in release order)",
+    "az_artist": "A–Z › Artist › Album",
+    "artist_only": "Artist (tracks loose inside, no album folders)",
 }
 RENAME_MODES = {
     "album": "Add the album (Song (Album).mp3)",
@@ -466,13 +469,25 @@ UNKNOWN_OPTIONS = {
 }
 
 
+def letter_of(artist: str) -> str:
+    """The A–Z folder for an artist: "The Beatles" → B, "Édith Piaf" → E, "2Pac" → #."""
+    import unicodedata
+    n = re.sub(r"(?i)^(the|a|an)\s+", "", tidy(artist)) or tidy(artist)
+    c = unicodedata.normalize("NFKD", n[:1])[:1].upper()
+    return c if "A" <= c <= "Z" else "#"
+
+
 def folder_for(output: Path, meta: dict, layout: str) -> Path:
     genre, sub = meta.get("_genre", UNSORTED), meta.get("_sub", "")
     artist, album = meta.get("_artist", UNKNOWN_ARTIST), meta.get("album", "")
     g = [safe_folder(genre)] + ([safe_folder(sub)] if sub else [])
     a = [safe_folder(artist)] + ([safe_folder(album)] if album else [])
     y = year_of(meta)
+    ya = [safe_folder(artist)] + ([safe_folder(f"{y} - {album}" if y else album)] if album else [])
     parts = {
+        "artist_year": ya,
+        "az_artist": ([letter_of(artist)] if artist not in (COMPILATIONS, UNKNOWN_ARTIST) else []) + a,
+        "artist_only": [safe_folder(artist)],
         "genre": g + a,
         "genre_top": [safe_folder(genre)] + a,
         "artist": a,
@@ -1146,7 +1161,7 @@ class Sorter:
             if opt.write_tags and r.filled:
                 r.tagged = write_tags(dest, {k: meta[k] for k in r.filled if k in ("artist", "title",
                                                                                       "tracknumber")})
-            if opt.covers and meta.get("album") and opt.layout != "genre_only":
+            if opt.covers and meta.get("album") and opt.layout not in ("genre_only", "artist_only"):
                 self._bring_cover(src.parent, dest.parent)
             self.index.add(digest, dest)
             if sound_key:
@@ -1314,6 +1329,8 @@ def retarget_tracks(output: Path, rels: list[str], new_artist: str, progress=Non
                 new_rel_dir = Path(*parts[:-1]) if len(parts) > 1 else Path()
             else:
                 parts[seg_i] = safe_folder(new_artist)
+                if seg_i > 0 and parts[seg_i - 1] == letter_of(old_artist) and len(parts[seg_i - 1]) == 1:
+                    parts[seg_i - 1] = letter_of(new_artist)  # A–Z layout: the letter folder follows
                 new_rel_dir = Path(*parts[:-1])
             dest_dir = output / new_rel_dir
             dest = dest_dir / src.name
