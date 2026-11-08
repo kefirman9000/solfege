@@ -463,6 +463,10 @@ NAMING = {
     "track_title": "Track number - Title (01 - Song.mp3)",
     "artist_title": "Artist - Title (Artist - Song.mp3)",
 }
+COPY_SCOPES = {
+    "album": "Only in the same album (the same song on another album is kept)",
+    "anywhere": "Anywhere in the sorted music",
+}
 UNKNOWN_OPTIONS = {
     "other": "Get their own folder under Other Genres",
     "unsorted": "Go to Unsorted",
@@ -988,7 +992,8 @@ class SortOptions:
     unknown_genre: str = "other"    # genres not in genres.json: own folder under Other Genres, or Unsorted
     skip_duplicates: bool = True
     duplicates_folder: bool = True
-    same_sound: bool = True         # also catch the same sound with different tags (MP3, FLAC, WAV)
+    same_sound: bool = False        # also count the same sound with different tags (MP3, FLAC, WAV)
+    copy_scope: str = "album"       # "album": only a copy in the same album/folder; "anywhere"
     fill_from_name: bool = True     # missing artist/title read from the file name
     write_tags: bool = True         # ...and written into the sorted track's tags
     covers: bool = True             # copy cover.jpg / folder.jpg into the album folder
@@ -1122,11 +1127,15 @@ class Sorter:
             if meta.get("error"):
                 r.error = f"{src.name} {meta['error']}; it was left where it is"
                 return r
+            self._describe(src, opt, meta)
+            folder = self._folder(opt, meta)
+            scope = f"f:{_rel(self.output, folder).casefold()}|"  # copies within this album/folder
             if opt.skip_duplicates:
-                orig = self.index.find(digest)
+                pre = scope if opt.copy_scope == "album" else ""
+                orig = self.index.find(pre + digest)
                 kind = "exact"
                 if orig is None and sound_key:
-                    orig, kind = self.index.find(sound_key), "sound"
+                    orig, kind = self.index.find(pre + sound_key), "sound"
                 if orig is not None and not _same_path(orig, src):
                     r.duplicate_of, r.duplicate_kind = orig, kind
                     if opt.duplicates_folder:
@@ -1139,8 +1148,6 @@ class Sorter:
                             record_duplicate(self.output, dest, orig)
                             self.journal.add(src, dest, opt.move, "duplicate")
                     return r
-            self._describe(src, opt, meta)
-            folder = self._folder(opt, meta)
             name = target_name(src, meta, opt.naming)
             dest = clash_dest(src, folder, name, meta, opt.rename, self._reserved)
             r.renamed = dest.name != src.name
@@ -1148,9 +1155,7 @@ class Sorter:
             r.dest = dest
             if opt.preview:
                 self._reserved.add(os.path.normcase(str(dest)))
-                self.index.add(digest, dest)  # later copies in this preview show as copies
-                if sound_key:
-                    self.index.add(sound_key, dest)
+                self._remember(digest, sound_key, scope, dest)  # later copies in this preview show as copies
                 return r
             need = src.stat().st_size
             if (not opt.move or not _same_drive(src, _existing(folder))) \
@@ -1163,9 +1168,7 @@ class Sorter:
                                                                                       "tracknumber")})
             if opt.covers and meta.get("album") and opt.layout not in ("genre_only", "artist_only"):
                 self._bring_cover(src.parent, dest.parent)
-            self.index.add(digest, dest)
-            if sound_key:
-                self.index.add(sound_key, dest)
+            self._remember(digest, sound_key, scope, dest)
             self.lib.add(dest, meta)
             return r
         except Exception as e:
@@ -1185,6 +1188,12 @@ class Sorter:
                     self.index.save()
                     self.lib.save()
                     self._dirty, self._saved_at = 0, time.monotonic()
+
+    def _remember(self, digest: str, sound_key: str | None, scope: str, dest: Path):
+        """Index a sorted track both across the whole library and within its album folder."""
+        for k in filter(None, (digest, sound_key)):
+            self.index.add(k, dest)
+            self.index.add(scope + k, dest)
 
     def _bring_cover(self, src_dir: Path, dest_dir: Path):
         if find_cover(dest_dir):
@@ -1419,9 +1428,12 @@ def search(output: Path, text: str, limit: int = 500) -> list[tuple[Path, dict]]
     return out
 
 
-def gather_copies(output: Path, progress=None, should_stop=None) -> tuple[int, list[str]]:
-    """Find copies already among the sorted tracks (exact, or same sound with different tags) and
-    MOVE the extra ones into Duplicates for review. One of each stays put. Undo puts them back."""
+def gather_copies(output: Path, progress=None, should_stop=None, scope: str = "album",
+                  same_sound: bool = False) -> tuple[int, list[str]]:
+    """Find exact copies already among the sorted tracks (and, if asked, the same sound with
+    different tags) and MOVE the extra ones into Duplicates for review. With scope "album" only
+    copies inside the same folder count, so the same song on two albums stays on both.
+    One of each stays put. Undo puts them back."""
     lib, idx = Library(output), CopyIndex(output)
     files = [f for f in output.rglob("*") if f.is_file() and is_audio(f)
              and DUPLICATES_DIR not in f.relative_to(output).parts[:1]
@@ -1435,10 +1447,11 @@ def gather_copies(output: Path, progress=None, should_stop=None) -> tuple[int, l
             break
         progress and progress(i, len(files), f.name)
         try:
-            keys = [file_hash(f)]
-            s = audio_hash(f)
+            pre = f"{os.path.normcase(str(f.parent))}|" if scope == "album" else ""
+            keys = [pre + file_hash(f)]
+            s = audio_hash(f) if same_sound else None
             if s:
-                keys.append(f"a:{f.suffix.lower()}:{s}")
+                keys.append(f"{pre}a:{f.suffix.lower()}:{s}")
             keeper = next((by_key[k] for k in keys if k in by_key), None)
             if keeper is None:
                 for k in keys:
@@ -1497,7 +1510,7 @@ def problem_report(note: str = "", log_lines: int = 160) -> str:
             mods.append(f"{mod} -")
     st = load_settings()
     keep = {k: st.get(k) for k in ("layout", "move", "rename", "naming", "unknown_genre", "verify",
-                                   "skip_duplicates", "same_sound", "fill_from_name", "appearance")}
+                                   "skip_duplicates", "same_sound", "copy_scope", "fill_from_name", "appearance")}
     try:
         log = LOG_FILE.read_text("utf-8", errors="replace").splitlines()[-log_lines:]
     except OSError:

@@ -458,13 +458,18 @@ class MainWindow(QMainWindow):
                                 "renamed this way. Nothing is ever overwritten.")
         self.naming_box = combo(engine.NAMING, "naming", "keep",
                                 "How sorted tracks are named. Tracks with no title tag keep their name.")
+        self.scope_box = combo(engine.COPY_SCOPES, "copy_scope", "album",
+                               "Same album (default): a copy only counts if it would go into the same album "
+                               "folder, so a song that's on an album and also on a compilation or single is "
+                               "sorted into both.\nAnywhere: one copy across all your music.")
         self.unknown_box = combo(engine.UNKNOWN_OPTIONS, "unknown_genre", "other",
                                  "Genre tags that aren't in genres.json. Tracks with no genre tag at all go to "
                                  "Unsorted.")
         for r, (label, box) in enumerate((("Folders:", self.layout_box), ("Same name, different track:",
                                                                           self.rename_box),
                                           ("File names:", self.naming_box),
-                                          ("Genres not in the list:", self.unknown_box)), start=1):
+                                          ("Genres not in the list:", self.unknown_box),
+                                          ("Copies count:", self.scope_box)), start=1):
             g.addWidget(QLabel(label), r, 0)
             g.addWidget(box, r, 1)
 
@@ -476,18 +481,20 @@ class MainWindow(QMainWindow):
 
         self.c_dupes = check("Skip copies of the same track", "skip_duplicates", True,
                              "Byte-for-byte identical files are sorted only once, including copies of tracks "
-                             "sorted in earlier runs. A different version (other bitrate, re-encoded, remastered, "
-                             "trimmed) is a different file and is always sorted.")
-        self.c_sound = check("Also catch the same sound with different tags", "same_sound", True,
-                             "MP3, FLAC and WAV: a file whose sound is identical but whose tags differ (a fixed "
-                             "title, added cover art) counts as a copy too. Only files of the same type are "
-                             "compared.")
+                             "sorted in earlier runs. Different sizes are always kept: another bitrate, a "
+                             "re-encode, a remaster or a trimmed file is a different file and is sorted.")
+        self.c_sound = check("Also count the same sound with different tags", "same_sound", False,
+                             "Off (default): only byte-for-byte identical files are copies, so files of "
+                             "different sizes are always kept.\nOn: MP3, FLAC and WAV files with identical "
+                             "sound but different tags (a fixed title, added cover art) count as copies too.")
         self.c_dupfolder = check("Put copies in a Duplicates folder", "duplicates_folder", True,
                                  "Copies are gathered in one Duplicates folder for you to review (copied or moved "
                                  "like the rest). Nothing is ever deleted. Untick to leave them where they are.")
         self.c_dupes.toggled.connect(self.c_sound.setEnabled)
+        self.c_dupes.toggled.connect(lambda on: self.scope_box.setEnabled(on))
         self.c_dupes.toggled.connect(self.c_dupfolder.setEnabled)
         self.c_sound.setEnabled(self.c_dupes.isChecked())
+        self.scope_box.setEnabled(self.c_dupes.isChecked())
         self.c_dupfolder.setEnabled(self.c_dupes.isChecked())
         self.c_fill = check("Fill in missing artist/title from the file name", "fill_from_name", True,
                             "\"Artist - Title.mp3\" or \"03 - Title.mp3\": used when the tags are empty, and "
@@ -575,6 +582,7 @@ class MainWindow(QMainWindow):
             rename=self.rename_box.currentData(), naming=self.naming_box.currentData(),
             unknown_genre=self.unknown_box.currentData(), skip_duplicates=self.c_dupes.isChecked(),
             duplicates_folder=self.c_dupfolder.isChecked(), same_sound=self.c_sound.isChecked(),
+            copy_scope=self.scope_box.currentData(),
             fill_from_name=self.c_fill.isChecked(), write_tags=self.c_fill.isChecked(),
             covers=self.c_covers.isChecked(), verify=self.c_verify.isChecked(),
             preview=self.c_preview.isChecked())
@@ -585,6 +593,7 @@ class MainWindow(QMainWindow):
                  layout=self.layout_box.currentData(), rename=self.rename_box.currentData(),
                  naming=self.naming_box.currentData(), unknown_genre=self.unknown_box.currentData(),
                  skip_duplicates=self.c_dupes.isChecked(), same_sound=self.c_sound.isChecked(),
+                 copy_scope=self.scope_box.currentData(),
                  duplicates_folder=self.c_dupfolder.isChecked(), fill_from_name=self.c_fill.isChecked(),
                  covers=self.c_covers.isChecked(), verify=self.c_verify.isChecked(),
                  auto_start=self.c_auto.isChecked(), min_tracks=self.s_min.value())
@@ -1307,7 +1316,8 @@ class MainWindow(QMainWindow):
             if problems:
                 QMessageBox.information(self, "Duplicates", "\n".join(problems[:20]))
 
-        self.run_busy("Comparing sorted tracks…", lambda p: engine.gather_copies(out, p), done)
+        self.run_busy("Comparing sorted tracks…", lambda p: engine.gather_copies(
+            out, p, scope=self.scope_box.currentData(), same_sound=self.c_sound.isChecked()), done)
 
     # ---- Search tab --------------------------------------------------------- #
     def _build_search_tab(self) -> QWidget:

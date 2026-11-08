@@ -141,15 +141,17 @@ Solfège handles what may be your only copies of your music, so it's built to ne
 
 With **Skip copies of the same track** on (the default), a track is sorted only once even if you have
 several copies of it. This works across runs too, so dropping a folder you've already sorted only adds
-what's new.
+what's new. Each of these can be changed on the Sort tab:
 
-- **Exact copies:** byte-for-byte identical files.
-- **Same sound, different tags** (MP3, FLAC and WAV; can be turned off): the sound itself is
-  identical, but the tags differ, like a copy where someone fixed the title or added cover art. Only
-  files of the same type are compared.
-
-A different **version** is never a copy: another bitrate, a re-encode, a remaster, a FLAC and an MP3
-of the same song, a trimmed or edited file. Those are all sorted normally, so both are kept.
+- **Only exact copies count.** A copy is a byte-for-byte identical file. Files of **different sizes are
+  always kept**: another bitrate, a re-encode, a remaster, a FLAC and an MP3 of the same song, a trimmed
+  or edited file are all sorted normally.
+- **Copies count: Only in the same album** (default). The same song on two albums, like an album track
+  that's also on a compilation, a soundtrack or a single, is sorted into **both** albums. Only a second
+  copy headed for the same album folder is treated as a copy. Choose **Anywhere in the sorted music** to
+  keep just one copy across your whole library instead.
+- **Also count the same sound with different tags** (off by default): MP3, FLAC and WAV files whose
+  sound is identical but whose tags differ (a fixed title, added cover art) count as copies too.
 
 With **Put copies in a Duplicates folder** on (the default), copies go into one `Duplicates` folder
 next to your sorted music for review. Untick it to leave copies where they are.
@@ -164,7 +166,8 @@ differs in orange. **Play** either one to listen.
 - Tick several (or **Tick all**) and press **Delete ticked…**.
 - A duplicate is only deleted if the sorted track it matches still exists.
 - **Find copies in sorted folders…** checks everything already sorted, keeps one of each and **moves**
-  the extras into Duplicates. Nothing is deleted, and Undo last sort puts them back.
+  the extras into Duplicates, following the same copy settings (so by default only exact copies inside
+  the same album folder). Nothing is deleted, and Undo last sort puts them back.
 
 ### Artists
 
