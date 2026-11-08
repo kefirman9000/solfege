@@ -1,0 +1,122 @@
+{
+  "_help": "Each top-level name is a GENRE folder. Inside it, each name is a SUB-GENRE folder, followed by the genre tags that belong in it (capitals, '&' vs 'and' and dashes don't matter). '_names' lists tags that go in the genre folder itself. A tag that matches nothing goes under 'Other Genres' or 'Unsorted' (your choice in the app). Add, rename or delete freely, save, then press 'Reload genres'.",
+
+  "Rock": {
+    "_names": ["rock", "rock music", "rock and roll", "rock n roll", "rocknroll"],
+    "Classic Rock": ["classic rock", "70s rock", "80s rock", "album rock", "arena rock", "southern rock", "blues rock", "heartland rock"],
+    "Alternative & Indie": ["alternative", "alternative rock", "alt rock", "indie", "indie rock", "grunge", "britpop", "shoegaze", "post rock", "emo", "garage rock", "college rock", "dream pop", "noise rock", "math rock"],
+    "Punk": ["punk", "punk rock", "pop punk", "post punk", "hardcore", "hardcore punk", "ska punk", "new wave"],
+    "Hard Rock & Metal": ["hard rock", "metal", "heavy metal", "thrash metal", "death metal", "black metal", "doom metal", "nu metal", "metalcore", "power metal", "progressive metal", "glam metal", "speed metal", "stoner rock", "sludge"],
+    "Progressive & Psychedelic": ["progressive rock", "prog rock", "prog", "psychedelic", "psychedelic rock", "krautrock", "art rock", "space rock"],
+    "Oldies & Rockabilly": ["oldies", "rockabilly", "doo wop", "surf", "surf rock", "50s", "60s"]
+  },
+
+  "Pop": {
+    "_names": ["pop", "pop music", "top 40", "chart"],
+    "Dance Pop": ["dance pop", "electropop", "synthpop", "synth pop", "europop", "eurodance", "disco pop"],
+    "Indie Pop": ["indie pop", "chamber pop", "bedroom pop", "twee", "jangle pop"],
+    "Soft Pop & Adult": ["soft rock", "adult contemporary", "easy listening", "pop rock", "yacht rock", "ballad", "ballads"],
+    "K-Pop & J-Pop": ["k pop", "kpop", "j pop", "jpop", "c pop", "cantopop", "mandopop", "anime"],
+    "Teen & Bubblegum": ["teen pop", "bubblegum", "boy band", "girl group"]
+  },
+
+  "Hip-Hop & Rap": {
+    "_names": ["hip hop", "hiphop", "rap", "hip hop rap"],
+    "Classic Hip-Hop": ["old school", "old school hip hop", "golden age", "boom bap", "east coast", "west coast", "g funk", "gangsta rap"],
+    "Trap & Modern": ["trap", "drill", "mumble rap", "cloud rap", "southern hip hop", "dirty south", "crunk"],
+    "Alternative Hip-Hop": ["alternative hip hop", "conscious", "conscious hip hop", "underground hip hop", "abstract hip hop", "jazz rap", "lo fi hip hop", "lofi"],
+    "Grime & UK": ["grime", "uk hip hop", "uk drill"]
+  },
+
+  "R&B & Soul": {
+    "_names": ["r and b", "rnb", "rhythm and blues", "soul"],
+    "Classic Soul & Motown": ["motown", "classic soul", "northern soul", "southern soul", "deep soul", "philly soul"],
+    "Contemporary R&B": ["contemporary r and b", "new jack swing", "neo soul", "alternative r and b", "quiet storm"],
+    "Funk": ["funk", "p funk", "funk rock", "boogie"],
+    "Gospel": ["gospel", "spirituals", "black gospel"]
+  },
+
+  "Electronic": {
+    "_names": ["electronic", "electronica", "edm", "dance", "electro"],
+    "House": ["house", "deep house", "tech house", "progressive house", "acid house", "french house", "garage", "uk garage", "future house"],
+    "Techno": ["techno", "minimal", "minimal techno", "detroit techno", "industrial techno", "hard techno"],
+    "Trance": ["trance", "progressive trance", "psytrance", "goa", "uplifting trance", "vocal trance"],
+    "Drum & Bass and Dubstep": ["drum and bass", "dnb", "jungle", "dubstep", "breakbeat", "breaks", "liquid funk", "brostep", "riddim"],
+    "Ambient & Chill": ["ambient", "chillout", "chill out", "chill", "downtempo", "trip hop", "idm", "chillwave", "new age", "lounge"],
+    "Synthwave": ["synthwave", "retrowave", "outrun", "vaporwave", "darksynth"],
+    "Disco": ["disco", "nu disco", "italo disco", "hi nrg"]
+  },
+
+  "Jazz": {
+    "_names": ["jazz"],
+    "Classic Jazz": ["swing", "big band", "bebop", "bop", "hard bop", "cool jazz", "dixieland", "ragtime", "vocal jazz", "standards"],
+    "Modern Jazz": ["modal jazz", "free jazz", "avant garde jazz", "post bop", "contemporary jazz", "spiritual jazz"],
+    "Fusion & Smooth": ["fusion", "jazz fusion", "jazz funk", "smooth jazz", "acid jazz", "jazz rock"],
+    "Latin Jazz": ["latin jazz", "bossa nova", "afro cuban jazz"]
+  },
+
+  "Blues": {
+    "_names": ["blues"],
+    "Delta & Acoustic Blues": ["delta blues", "acoustic blues", "country blues", "piedmont blues"],
+    "Electric & Chicago Blues": ["chicago blues", "electric blues", "texas blues", "modern blues", "soul blues"]
+  },
+
+  "Country & Folk": {
+    "_names": ["country", "country music"],
+    "Classic Country": ["classic country", "honky tonk", "outlaw country", "western swing", "nashville sound", "western"],
+    "Modern Country": ["modern country", "country pop", "contemporary country", "bro country", "new country"],
+    "Bluegrass & Americana": ["bluegrass", "americana", "alt country", "country rock", "red dirt"],
+    "Folk": ["folk", "folk rock", "indie folk", "singer songwriter", "acoustic", "traditional folk", "contemporary folk", "celtic", "sea shanty"]
+  },
+
+  "Classical": {
+    "_names": ["classical", "classical music", "orchestral", "classic"],
+    "Baroque": ["baroque"],
+    "Romantic": ["romantic", "romantic era"],
+    "Opera & Vocal": ["opera", "choral", "choir", "art song", "lieder", "oratorio", "operetta"],
+    "Modern Classical": ["modern classical", "contemporary classical", "minimalism", "neoclassical", "neo classical", "avant garde"],
+    "Chamber & Solo": ["chamber", "chamber music", "piano", "solo piano", "string quartet"]
+  },
+
+  "Latin": {
+    "_names": ["latin", "latino", "latin music"],
+    "Reggaeton & Urbano": ["reggaeton", "latin trap", "urbano", "dembow"],
+    "Salsa & Tropical": ["salsa", "merengue", "bachata", "cumbia", "tropical", "mambo", "cha cha", "son cubano"],
+    "Latin Pop & Rock": ["latin pop", "latin rock", "rock en espanol", "pop latino"],
+    "Regional Mexican": ["regional mexican", "mariachi", "banda", "norteno", "ranchera", "corridos", "tejano"],
+    "Brazilian": ["samba", "mpb", "forro", "baile funk", "tropicalia", "axe"]
+  },
+
+  "Reggae & Caribbean": {
+    "_names": ["reggae"],
+    "Roots & Dub": ["roots reggae", "roots", "dub", "rocksteady", "ska", "lovers rock"],
+    "Dancehall & Soca": ["dancehall", "ragga", "soca", "calypso", "zouk"]
+  },
+
+  "World": {
+    "_names": ["world", "world music", "international", "ethnic", "traditional"],
+    "African": ["afrobeat", "afrobeats", "highlife", "amapiano", "afro pop", "soukous", "mbalax", "african"],
+    "Asian & Middle Eastern": ["bollywood", "indian", "bhangra", "arabic", "turkish", "persian", "qawwali", "indian classical", "carnatic", "hindustani"],
+    "European": ["chanson", "schlager", "flamenco", "fado", "polka", "klezmer", "balkan", "irish"]
+  },
+
+  "Soundtracks & Stage": {
+    "_names": ["soundtrack", "ost", "score"],
+    "Film & TV": ["film score", "film", "movie", "original score", "tv", "television", "soundtracks"],
+    "Video Games": ["video game", "game", "video game music", "vgm", "chiptune", "8 bit"],
+    "Musicals": ["musical", "musicals", "show tunes", "broadway", "cast recording", "stage and screen"]
+  },
+
+  "Kids & Holiday": {
+    "Children's": ["children", "childrens", "childrens music", "kids", "nursery rhymes", "lullaby", "lullabies"],
+    "Christmas & Holiday": ["christmas", "holiday", "xmas", "christmas music", "seasonal"]
+  },
+
+  "Spoken & Other": {
+    "Comedy": ["comedy", "stand up", "standup", "humor", "humour", "novelty", "parody"],
+    "Spoken Word & Audiobooks": ["spoken word", "audiobook", "audio book", "speech", "poetry", "books and spoken"],
+    "Podcasts": ["podcast", "podcasts", "talk", "radio"],
+    "Christian & Worship": ["christian", "ccm", "worship", "praise and worship", "religious", "christian rock", "hymns"],
+    "Sounds & Meditation": ["meditation", "relaxation", "nature sounds", "sleep", "white noise", "healing", "yoga", "sound effects"]
+  }
+}

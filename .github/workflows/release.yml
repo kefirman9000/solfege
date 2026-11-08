@@ -1,0 +1,25 @@
+# Publishes a GitHub Release whenever VERSION changes on main.
+# The app's updater only installs releases, and checks the zip against its SHA-256 checksum.
+name: Release
+on:
+  push:
+    branches: [main]
+    paths: [VERSION]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=$(tr -d '[:space:]' < VERSION)
+          if gh release view "v$v" >/dev/null 2>&1; then echo "v$v is already released"; exit 0; fi
+          git archive --format=zip --prefix=solfege/ -o "solfege-$v.zip" HEAD
+          sha256sum "solfege-$v.zip" > SHA256SUMS.txt
+          git log -1 --format=%B | grep -v -e '^Co-Authored-By' -e '^Claude-Session' > notes.md
+          gh release create "v$v" "solfege-$v.zip" SHA256SUMS.txt --title "Solfège $v" --notes-file notes.md
